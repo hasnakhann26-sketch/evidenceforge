@@ -1,0 +1,59 @@
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-full);
+  line-height: 1.4;
+  white-space: nowrap;
+  letter-spacing: 0.01em;
+}
+
+/* Stance variants */
+.supporting {
+  background: var(--success-100);
+  color: var(--success-800);
+}
+
+.contradicting {
+  background: var(--error-100);
+  color: var(--error-800);
+}
+
+.mixed {
+  background: var(--warning-100);
+  color: var(--warning-800);
+}
+
+.neutral {
+  background: var(--neutral-100);
+  color: var(--neutral-700);
+}
+
+/* Confidence variants */
+.high {
+  background: var(--success-100);
+  color: var(--success-800);
+}
+
+.moderate {
+  background: var(--secondary-100);
+  color: var(--secondary-800);
+}
+
+.low {
+  background: var(--warning-100);
+  color: var(--warning-800);
+}
+
+.very-low {
+  background: var(--error-100);
+  color: var(--error-800);
+}
+
+.source-type {
+  background: var(--accent-100);
+  color: var(--accent-700);
+}

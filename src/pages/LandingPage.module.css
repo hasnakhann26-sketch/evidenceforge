@@ -1,0 +1,413 @@
+.page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── Hero ── */
+.hero {
+  padding: var(--space-20) var(--space-6) var(--space-16);
+  background: linear-gradient(180deg, var(--neutral-50) 0%, var(--neutral-100) 100%);
+  border-bottom: 1px solid var(--border);
+}
+
+.heroInner {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: var(--space-16);
+  align-items: center;
+}
+
+.heroContent {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.eyebrow {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--primary-600);
+}
+
+.heroTitle {
+  font-family: var(--font-serif);
+  font-size: clamp(2.5rem, 5vw, 4rem);
+  font-weight: 600;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  color: var(--text);
+}
+
+.heroTitleAccent {
+  color: var(--primary-600);
+  font-style: italic;
+  font-weight: 500;
+}
+
+.heroLead {
+  font-size: 1.125rem;
+  line-height: 1.65;
+  color: var(--text-secondary);
+  max-width: 540px;
+}
+
+.heroActions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+  margin-top: var(--space-2);
+}
+
+.heroNote {
+  font-size: 0.8125rem;
+  color: var(--text-muted);
+}
+
+/* ── Hero visual ── */
+.heroVisual {
+  display: flex;
+  justify-content: center;
+}
+
+.visualCard {
+  width: 100%;
+  max-width: 420px;
+  background: var(--neutral-0);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-xl);
+  overflow: hidden;
+  animation: scaleIn 0.6s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+.visualHeader {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+  border-bottom: 1px solid var(--border);
+  background: var(--neutral-50);
+}
+
+.visualDot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--neutral-300);
+}
+
+.visualDot:first-child {
+  background: var(--error-300);
+}
+.visualDot:nth-child(2) {
+  background: var(--secondary-300);
+}
+.visualDot:nth-child(3) {
+  background: var(--success-300);
+}
+
+.visualBody {
+  padding: var(--space-6);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.visualLine {
+  height: 12px;
+  border-radius: var(--radius-sm);
+  background: var(--neutral-200);
+}
+
+.wide {
+  width: 100%;
+}
+.medium {
+  width: 70%;
+}
+.narrow {
+  width: 45%;
+}
+
+.visualRow {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.visualBadge {
+  height: 24px;
+  border-radius: var(--radius-full);
+  flex: 1;
+}
+
+.badgeSupport {
+  background: var(--success-200);
+}
+.badgeContradict {
+  background: var(--error-200);
+}
+.badgeMixed {
+  background: var(--warning-200);
+}
+
+.visualBar {
+  flex: 1;
+  height: 8px;
+  border-radius: var(--radius-sm);
+  background: var(--primary-200);
+}
+
+.visualBar:nth-child(1) {
+  background: var(--success-400);
+}
+.visualBar:nth-child(2) {
+  background: var(--secondary-400);
+}
+.visualBar:nth-child(3) {
+  background: var(--warning-400);
+}
+.visualBar:nth-child(4) {
+  background: var(--error-400);
+}
+
+/* ── Principle band ── */
+.principle {
+  padding: var(--space-16) var(--space-6);
+  background: var(--primary-900);
+  color: var(--neutral-0);
+}
+
+.principleInner {
+  max-width: 800px;
+  margin: 0 auto;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.principleTitle {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--primary-300);
+}
+
+.principleStatement {
+  font-family: var(--font-serif);
+  font-size: clamp(1.75rem, 4vw, 2.75rem);
+  font-weight: 500;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  color: var(--neutral-0);
+}
+
+.principleDescription {
+  font-size: 1.0625rem;
+  line-height: 1.7;
+  color: var(--primary-200);
+}
+
+/* ── Workflow ── */
+.workflow {
+  padding: var(--space-16) var(--space-6);
+  background: var(--neutral-50);
+}
+
+.workflowInner {
+  max-width: var(--max-width);
+  margin: 0 auto;
+}
+
+.sectionHeading {
+  font-family: var(--font-serif);
+  font-size: 2rem;
+  font-weight: 600;
+  color: var(--text);
+  letter-spacing: -0.02em;
+}
+
+.sectionSubheading {
+  font-size: 1.0625rem;
+  color: var(--text-secondary);
+  margin-top: var(--space-2);
+  margin-bottom: var(--space-10);
+}
+
+.workflowSteps {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-6);
+}
+
+.step {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-6);
+  background: var(--neutral-0);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  transition: box-shadow var(--transition-base), transform var(--transition-base);
+}
+
+.step:hover {
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-4px);
+}
+
+.stepNum {
+  font-family: var(--font-serif);
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--primary-400);
+  letter-spacing: -0.02em;
+}
+
+.stepTitle {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.stepDescription {
+  font-size: 0.9375rem;
+  line-height: 1.6;
+  color: var(--text-secondary);
+}
+
+/* ── Principles grid ── */
+.principles {
+  padding: var(--space-16) var(--space-6);
+  background: var(--neutral-0);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+
+.principlesInner {
+  max-width: var(--max-width);
+  margin: 0 auto;
+}
+
+.principlesGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-6);
+  margin-top: var(--space-10);
+}
+
+.principleCard {
+  padding: var(--space-8);
+  background: var(--neutral-50);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+}
+
+.principleCardTitle {
+  font-family: var(--font-serif);
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: var(--space-3);
+  letter-spacing: -0.01em;
+}
+
+.principleCardDesc {
+  font-size: 0.9375rem;
+  line-height: 1.6;
+  color: var(--text-secondary);
+}
+
+/* ── CTA ── */
+.cta {
+  padding: var(--space-20) var(--space-6);
+  background: linear-gradient(180deg, var(--primary-50) 0%, var(--neutral-50) 100%);
+}
+
+.ctaInner {
+  max-width: 600px;
+  margin: 0 auto;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+  align-items: center;
+}
+
+.ctaTitle {
+  font-family: var(--font-serif);
+  font-size: clamp(1.5rem, 3vw, 2.25rem);
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  color: var(--text);
+}
+
+/* ── Footer ── */
+.footer {
+  padding: var(--space-8) var(--space-6);
+  background: var(--neutral-900);
+  color: var(--neutral-400);
+}
+
+.footerInner {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.footerLogo {
+  font-family: var(--font-serif);
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--neutral-200);
+}
+
+.footerTag {
+  font-size: 0.8125rem;
+  color: var(--neutral-500);
+}
+
+/* ── Responsive ── */
+@media (max-width: 900px) {
+  .heroInner {
+    grid-template-columns: 1fr;
+    gap: var(--space-10);
+  }
+
+  .heroVisual {
+    display: none;
+  }
+
+  .workflowSteps {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .principlesGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .hero {
+    padding: var(--space-12) var(--space-4) var(--space-10);
+  }
+
+  .workflowSteps {
+    grid-template-columns: 1fr;
+  }
+
+  .footerInner {
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+}
