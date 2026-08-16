@@ -11,6 +11,7 @@ interface ImportMetaEnv {
   readonly VITE_AI_PROVIDER: string;
   readonly VITE_AI_MODEL: string;
   readonly VITE_AI_API_BASE: string;
+  readonly VITE_GEMINI_PROXY_URL: string;
 }
 
 interface ImportMeta {

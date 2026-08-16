@@ -9,6 +9,7 @@ import type { AIProvider } from "@/ai/AIProvider";
 import { getAIConfig, type AIConfig } from "@/ai/config";
 import { MockAIProvider } from "@/ai/providers/MockAIProvider";
 import { createOpenAICompatibleProvider } from "@/ai/providers/OpenAICompatibleProvider";
+import { createGeminiProvider } from "@/ai/providers/GeminiProvider";
 
 let cachedProvider: AIProvider | null = null;
 let cachedConfigKey: string | null = null;
@@ -17,6 +18,8 @@ export function createProvider(config: AIConfig): AIProvider {
   switch (config.provider) {
     case "openai-compatible":
       return createOpenAICompatibleProvider(config);
+    case "gemini":
+      return createGeminiProvider(config);
     case "mock":
     default:
       return MockAIProvider;

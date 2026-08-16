@@ -6,3 +6,4 @@ export { getAIConfig, isDemoMode, type AIConfig, type ProviderType } from "@/ai/
 export { getProvider, createProvider } from "@/ai/providerFactory";
 export { MockAIProvider } from "@/ai/providers/MockAIProvider";
 export { createOpenAICompatibleProvider } from "@/ai/providers/OpenAICompatibleProvider";
+export { createGeminiProvider } from "@/ai/providers/GeminiProvider";
