@@ -108,7 +108,7 @@ export function createGeminiProvider(config: AIConfig): AIProvider {
 
   return {
     id: "gemini",
-    name: `Gemini (${config.model || "gemini-2.0-flash"})`,
+    name: `Gemini (${config.model || "gemini-3.5-flash-lite"})`,
     isDemo: false,
 
     async analyzeQuestion(question: string): Promise<ResearchQuestionAnalysis> {

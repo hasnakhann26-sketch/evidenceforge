@@ -14,8 +14,6 @@
 //   Returns: { data: <parsed JSON from Gemini> } on success
 //   Returns: { error: string } on failure (never includes the API key)
 
-import { GoogleGenerativeAI } from "npm:@google/generative-ai@0.21.0";
-
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
@@ -23,7 +21,9 @@ const corsHeaders = {
     "Content-Type, Authorization, X-Client-Info, Apikey",
 };
 
-const GEMINI_MODEL = "gemini-2.0-flash";
+const GEMINI_MODEL = "gemini-3.5-flash-lite";
+const GEMINI_API_ENDPOINT =
+  `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent`;
 const REQUEST_TIMEOUT_MS = 60_000;
 const MAX_RETRIES = 2;
 
@@ -40,8 +40,7 @@ function errorResponse(status: number, message: string): Response {
   });
 }
 
-function sanitizeErrorMessage(status: number, _rawMessage: string): string {
-  // Never expose the API key or upstream headers in error messages.
+function sanitizeErrorMessage(status: number): string {
   if (status === 401 || status === 403) {
     return "Authentication with the AI provider failed. Check that the API key is valid.";
   }
@@ -54,35 +53,119 @@ function sanitizeErrorMessage(status: number, _rawMessage: string): string {
   return "The AI provider returned an error. Please try again.";
 }
 
+interface GeminiResponse {
+  candidates?: Array<{
+    content?: {
+      parts?: Array<{ text?: string }>;
+    };
+    finishReason?: string;
+  }>;
+  promptFeedback?: {
+    blockReason?: string;
+  };
+}
+
+function extractText(json: GeminiResponse): string {
+  if (json.promptFeedback?.blockReason) {
+    throw new Error(`Request blocked: ${json.promptFeedback.blockReason}`);
+  }
+
+  const candidate = json.candidates?.[0];
+  if (!candidate) {
+    throw new Error("No candidates in response.");
+  }
+
+  if (candidate.finishReason && candidate.finishReason !== "STOP") {
+    if (candidate.finishReason === "MAX_TOKENS") {
+      throw new Error("Response exceeded maximum token limit.");
+    }
+    if (candidate.finishReason === "SAFETY") {
+      throw new Error("Response was blocked by safety filters.");
+    }
+  }
+
+  const text = candidate.content?.parts?.[0]?.text;
+  if (!text || text.trim().length === 0) {
+    throw new Error("The AI provider returned an empty response.");
+  }
+  return text;
+}
+
 async function callGemini(
   apiKey: string,
   systemPrompt: string,
   userPrompt: string
 ): Promise<unknown> {
-  const genAI = new GoogleGenerativeAI(apiKey);
-  const model = genAI.getGenerativeModel({
-    model: GEMINI_MODEL,
-    systemInstruction: systemPrompt,
+  const requestBody = {
+    system_instruction: {
+      parts: [{ text: systemPrompt }],
+    },
+    contents: [
+      {
+        role: "user",
+        parts: [{ text: userPrompt }],
+      },
+    ],
     generationConfig: {
       temperature: 0.2,
       responseMimeType: "application/json",
     },
-  });
+  };
 
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
 
+  let response: Response;
   try {
-    const result = await model.generateContent(userPrompt, {
-      abortSignal: controller.signal,
+    response = await fetch(`${GEMINI_API_ENDPOINT}?key=${apiKey}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(requestBody),
+      signal: controller.signal,
     });
-    const text = result.response.text();
-    if (!text || text.trim().length === 0) {
-      throw new Error("The AI provider returned an empty response.");
+  } catch (err) {
+    if (err instanceof DOMException && err.name === "AbortError") {
+      throw new Error("Request timed out.");
     }
-    return JSON.parse(text);
+    throw new Error("Network error contacting AI provider.");
   } finally {
     clearTimeout(timeoutId);
+  }
+
+  if (!response.ok) {
+    let errorDetail = "";
+    try {
+      const errBody = await response.json();
+      errorDetail = errBody?.error?.message ?? "";
+    } catch {
+      // ignore parse failure
+    }
+
+    if (response.status === 401 || response.status === 403) {
+      throw new Error(`Auth failed: ${response.status}`);
+    }
+    if (response.status === 429) {
+      throw new Error("Rate limited: 429");
+    }
+    if (response.status >= 500) {
+      throw new Error(`Server error: ${response.status} ${errorDetail}`);
+    }
+    throw new Error(`API error: ${response.status} ${errorDetail}`);
+  }
+
+  let json: GeminiResponse;
+  try {
+    json = (await response.json()) as GeminiResponse;
+  } catch {
+    throw new Error("Malformed response from AI provider.");
+  }
+
+  const text = extractText(json);
+
+  try {
+    return JSON.parse(text);
+  } catch {
+    throw new Error("AI provider returned non-JSON content.");
   }
 }
 
@@ -99,20 +182,18 @@ async function callGeminiWithRetry(
     } catch (err) {
       lastError = err instanceof Error ? err : new Error(String(err));
 
-      // Retry only on transient failures (timeout / network / 5xx / rate limit).
       const msg = lastError.message.toLowerCase();
       const isTransient =
         msg.includes("timeout") ||
-        msg.includes("aborted") ||
+        msg.includes("timed out") ||
         msg.includes("network") ||
-        msg.includes("fetch") ||
         msg.includes("503") ||
         msg.includes("502") ||
-        msg.includes("429");
+        msg.includes("429") ||
+        msg.includes("rate limited");
 
       if (!isTransient || attempt === MAX_RETRIES) break;
 
-      // Exponential backoff: 1s, 2s
       await new Promise((r) => setTimeout(r, 1000 * (attempt + 1)));
     }
   }
@@ -164,15 +245,14 @@ Deno.serve(async (req: Request) => {
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
 
-    // Determine HTTP-like status from error for sanitized message
-    const status = msg.includes("401") || msg.includes("403")
+    const status = msg.includes("auth failed")
       ? 401
-      : msg.includes("429")
+      : msg.includes("rate limited") || msg.includes("429")
       ? 429
-      : msg.includes("timeout") || msg.includes("aborted")
+      : msg.includes("timeout") || msg.includes("timed out")
       ? 504
       : 502;
 
-    return errorResponse(status, sanitizeErrorMessage(status, msg));
+    return errorResponse(status, sanitizeErrorMessage(status));
   }
 });
